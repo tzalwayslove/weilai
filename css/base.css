@@ -1,0 +1,90 @@
+/* 指定当前css文件, 编码格式是utf-8 */
+@charset "UTF-8";
+
+/* 清除默认的外边距和内边距 */
+html, body, ul, li, ol, dl, dd, dt, p, h1, h2, h3, h4, h5, h6, form, fieldset, legend, img {
+  margin: 0;
+  padding: 0;
+}
+
+fieldset, img, input, button, textarea {
+  border: none;
+  padding: 0;
+  margin: 0;
+  outline-style: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+input {
+  font-family: "SimSun", "宋体";
+}
+
+select, input, textarea {
+  font-size: 12px;
+  margin: 0;
+}
+
+textarea {
+  resize: none;
+}
+
+img video {
+  border: 0;
+  /* 可以防止 img 下边出现缝隙问题 */
+  vertical-align: middle;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+body {
+  /* 将整个页面的字体, 默认重置 */
+  font: 12px/18px Microsoft YaHei, Arial, Verdana, "SimSun";
+  color: #000;
+  background: #fff;
+}
+
+.clearfix::before,
+.clearfix::after {
+  content: "";
+  display: table;
+}
+
+.clearfix::after {
+  clear: both;
+}
+
+/* 兼容 IE 67 */
+.clearfix {
+  *zoom: 1;
+}
+
+a {
+  color: #000;
+  text-decoration: none;
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+  text-decoration: none;
+  font-weight: normal;
+  font-size: 100%;
+}
+
+/* 废物利用 1*/
+s, i, em {
+  font-style: normal;
+  text-decoration: none;
+}
+
+.fl {
+  float: left;
+}
+
+.fr {
+  float: right;
+}

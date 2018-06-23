@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <title>新闻</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/news.css">
+  <link rel="shortcut icon" href="favicon.ico">
+  <script src="js/jquery-1.12.4.js"></script>
+  <script src="js/header.js"></script>
+  <script src="js/news.js"></script>
+</head>
+
+<body>
+  <style>
+    canvas {
+      position: absolute;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      -moz-backface-visibility: hidden;
+      -ms-backface-visibility: hidden;
+    }
+
+    #container img {
+      position: absolute;
+      -webkit-transition: opacity .3s;
+      transition: opacity .3s;
+
+    }
+
+    #container {
+      position: relative;
+      width: 678px;
+      height: 432px;
+      margin: 0 auto;
+      overflow: hidden;
+  
+    }
+  </style>
+  <script src=""></script>
+  <!-- header start -->
+  <div style="height: 70px">
+    <header class="w clearfix">
+      <div class="logo fl">
+        <h1>
+          <a href="./index.html">蔚来</a>
+        </h1>
+      </div>
+      <div class="nav fl">
+        <ul>
+          <li class="drop">
+          <span>
+            <em></em> 车</span>
+            <ul class="car-tab">
+              <li>量产车</li>
+              <li>
+                <a href="404.html">E S 8</a>
+                <span class="spacer"></span>
+              </li>
+              <li>
+                <a href="404.html">E P 9</a>
+                <span class="spacer"></span>
+              </li>
+              <li>概念车</li>
+              <li>
+                <a href="404.html">E V E</a>
+                <span class="spacer"></span>
+              </li>
+            </ul>
+          </li>
+          <li class="drop">
+          <span>
+            <em></em> 服务</span>
+            <ul class="service-tab">
+              <li>
+                <a href="服务.html">N I O&nbsp;&nbsp; H o u s e</a>
+                <span class="spacer"></span>
+              </li>
+              <li>
+                <a href="404.html">N I O&nbsp;&nbsp; P o w e r</a>
+                <span class="spacer"></span>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="life.html">生活</a>
+            <span class="spacer"></span>
+          </li>
+          <li>
+            <a href="电动方程式.html">电动方程式</a>
+            <span class="spacer"></span>
+          </li>
+          <li class="drop">
+          <span>
+            <em></em> 蔚来</span>
+            <ul class="NIO-tab">
+              <li>
+                <a href="新闻.html">新闻</a>
+                <span class="spacer first"></span>
+              </li>
+              <li>
+                <a href="404.html">关于蔚来</a>
+                <span class="spacer"></span>
+              </li>
+              <li>
+                <a href="加入我们.html">加入我们</a>
+                <span class="spacer"></span>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="nav-consult fr">
+        <a href="在线客服.html">咨 询 E S 8</a>
+      </div>
+    </header>
+  </div>
+  <!-- header end -->
+
+  </div>
+  <!-- header end -->
+
+  <!--main start-->
+  <!-- <div class="main">
+  <div class="main_content">
+    <p>蔚来ES8正式上市 重新定义汽车用户体验</p>
+    <div class="more">
+      <a class = "button" href="#">
+        <b class="arr-content">了解更多</b>
+        <em class="arrow"></em>
+      </a>
+    </div>
+
+  </div>
+</div> -->
+  <!--main end-->
+  <!--  -->
+  <div id="container"> </div>
+  <script src='js/delaunay.js'></script>
+  <script src='js/TweenMax.js'></script>
+
+  <script>
+    const TWO_PI = Math.PI * 2;
+
+    var images = [],
+      imageIndex = 0;
+
+    var image,
+      imageWidth = 768,
+      imageHeight = 485;
+
+    var vertices = [],
+      indices = [],
+      prevfrag = [],
+      fragments = [];
+
+    var margin = 50;
+
+    var container = document.getElementById('container');
+
+    var clickPosition = [imageWidth * 0.5, imageHeight * 0.5];
+
+    window.onload = function () {
+      TweenMax.set(container, {
+        perspective: 500
+      });
+
+      // images from http://www.hdwallpapers.in
+      var urls = [
+          'images/1.jpg',
+          'images/2.jpg',
+          'images/3.jpg',
+          'images/4.jpg'
+        ],
+        image,
+        loaded = 0;
+      // very quick and dirty hack to load and display the first image asap
+      images[0] = image = new Image();
+      image.onload = function () {
+        if (++loaded === 1) {
+
+          for (var i = 1; i < 4; i++) {
+            images[i] = image = new Image();
+
+            image.src = urls[i];
+          }
+          placeImage();
+        }
+      };
+      image.src = urls[0];
+    };
+
+    function placeImage(transitionIn) {
+      image = images[imageIndex];
+
+      if (++imageIndex === images.length) imageIndex = 0;
+
+      var num = Math.random();
+      if (num < .25) {
+        image.direction = "left";
+      } else if (num < .5) {
+        image.direction = "top";
+      } else if (num < .75) {
+        image.direction = "bottom";
+      } else {
+        image.direction = "right";
+      }
+
+      container.appendChild(image);
+      image.style.opacity = 0;
+
+      if (transitionIn !== false) {
+        triangulateIn();
+      }
+    }
+
+    function triangulateIn(event) {
+      var box = image.getBoundingClientRect(),
+        top = box.top,
+        left = box.left;
+
+      if (image.direction == "left") {
+        clickPosition[0] = 0;
+        clickPosition[1] = imageHeight / 2;
+      } else if (image.direction == "top") {
+        clickPosition[0] = imageWidth / 2;
+        clickPosition[1] = 0;
+      } else if (image.direction == "bottom") {
+        clickPosition[0] = imageWidth / 2;
+        clickPosition[1] = imageHeight;
+      } else if (image.direction == "right") {
+        clickPosition[0] = imageWidth;
+        clickPosition[1] = imageHeight / 2;
+      }
+
+
+      triangulate();
+      build();
+    }
+
+    function triangulate() {
+      for (var i = 0; i < 40; i++) {
+        x = -margin + Math.random() * (imageWidth + margin * 2);
+        y = -margin + Math.random() * (imageHeight + margin * 2);
+        vertices.push([x, y]);
+      }
+      vertices.push([0, 0]);
+      vertices.push([imageWidth, 0]);
+      vertices.push([imageWidth, imageHeight]);
+      vertices.push([0, imageHeight]);
+
+      vertices.forEach(function (v) {
+        v[0] = clamp(v[0], 0, imageWidth);
+        v[1] = clamp(v[1], 0, imageHeight);
+      });
+
+      indices = Delaunay.triangulate(vertices);
+    }
+
+    function build() {
+      var p0, p1, p2,
+        fragment;
+
+      var tl0 = new TimelineMax({
+        onComplete: buildCompleteHandler
+      });
+
+      for (var i = 0; i < indices.length; i += 3) {
+        p0 = vertices[indices[i + 0]];
+        p1 = vertices[indices[i + 1]];
+        p2 = vertices[indices[i + 2]];
+
+        fragment = new Fragment(p0, p1, p2);
+
+        var dx = fragment.centroid[0] - clickPosition[0],
+          dy = fragment.centroid[1] - clickPosition[1],
+          d = Math.sqrt(dx * dx + dy * dy),
+          rx = 30 * sign(dy),
+          ry = 90 * -sign(dx),
+          delay = d * 0.003 * randomRange(0.9, 1.1);
+        fragment.canvas.style.zIndex = Math.floor(d).toString();
+
+        var tl1 = new TimelineMax();
+
+        if (image.direction == "left") {
+          rx = Math.abs(rx);
+          ry = 0;
+        } else if (image.direction == "top") {
+          rx = 0;
+          ry = Math.abs(ry);
+        } else if (image.direction == "bottom") {
+          rx = 0;
+          ry = -Math.abs(ry);
+        } else if (image.direction == "right") {
+          rx = -Math.abs(rx);
+          ry = 0;
+        }
+
+        tl1.from(fragment.canvas, 1, {
+          z: -50,
+          rotationX: rx,
+          rotationY: ry,
+          scaleX: 0,
+          scaleY: 0,
+          ease: Cubic.easeIn
+        });
+        tl1.from(fragment.canvas, 0.4, {
+          alpha: 0
+        }, 0.6);
+
+        tl0.insert(tl1, delay);
+
+        fragments.push(fragment);
+        container.appendChild(fragment.canvas);
+      }
+    }
+
+    function buildCompleteHandler() {
+      // add pooling?
+      image.style.opacity = 1;
+      image.addEventListener('transitionend', function catchTrans() {
+        fragments.forEach(function (f) {
+          container.removeChild(f.canvas);
+        });
+
+        fragments.length = 0;
+        vertices.length = 0;
+        indices.length = 0;
+
+        placeImage();
+        this.removeEventListener('transitionend', catchTrans, false);
+      }, false);
+
+    }
+
+    //////////////
+    // MATH UTILS
+    //////////////
+
+    function randomRange(min, max) {
+      return min + (max - min) * Math.random();
+    }
+
+    function clamp(x, min, max) {
+      return x < min ? min : (x > max ? max : x);
+    }
+
+    function sign(x) {
+      return x < 0 ? -1 : 1;
+    }
+
+    //////////////
+    // FRAGMENT
+    //////////////
+
+    Fragment = function (v0, v1, v2) {
+      this.v0 = v0;
+      this.v1 = v1;
+      this.v2 = v2;
+
+      this.computeBoundingBox();
+      this.computeCentroid();
+      this.createCanvas();
+      this.clip();
+    };
+    Fragment.prototype = {
+      computeBoundingBox: function () {
+        var xMin = Math.min(this.v0[0], this.v1[0], this.v2[0]),
+          xMax = Math.max(this.v0[0], this.v1[0], this.v2[0]),
+          yMin = Math.min(this.v0[1], this.v1[1], this.v2[1]),
+          yMax = Math.max(this.v0[1], this.v1[1], this.v2[1]);
+
+        this.box = {
+          x: Math.round(xMin),
+          y: Math.round(yMin),
+          w: Math.round(xMax - xMin),
+          h: Math.round(yMax - yMin)
+        };
+
+      },
+      computeCentroid: function () {
+        var x = (this.v0[0] + this.v1[0] + this.v2[0]) / 3,
+          y = (this.v0[1] + this.v1[1] + this.v2[1]) / 3;
+
+        this.centroid = [x, y];
+      },
+      createCanvas: function () {
+        this.canvas = document.createElement('canvas');
+        this.canvas.width = this.box.w;
+        this.canvas.height = this.box.h;
+        this.canvas.style.width = this.box.w + 'px';
+        this.canvas.style.height = this.box.h + 'px';
+        this.canvas.style.left = this.box.x + 'px';
+        this.canvas.style.top = this.box.y + 'px';
+        this.ctx = this.canvas.getContext('2d');
+      },
+      clip: function () {
+        this.ctx.save();
+        this.ctx.translate(-this.box.x, -this.box.y);
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.v0[0], this.v0[1]);
+        this.ctx.lineTo(this.v1[0], this.v1[1]);
+        this.ctx.lineTo(this.v2[0], this.v2[1]);
+        this.ctx.closePath();
+        this.ctx.clip();
+        this.ctx.drawImage(image, 0, 0);
+        this.ctx.restore();
+      }
+    }
+  </script>
+
+
+
+  <!--  -->
+  <!--news start-->
+  <div class="new">
+    <a>蔚来新闻</a>
+  </div>
+  <!--news end-->
+
+  <!--item start-->
+  <div class="banner">
+    <div class="item fl">
+      <div class="item_pic">
+        <img src="shy-images/1.jpg" alt="">
+      </div>
+      <div class="info">
+        <p class="top">蔚来成为首批在北京获得自动驾驶车辆道路测试牌照的整车企业</p>
+        <p class="date">2018年4月26日</p>
+      </div>
+    </div>
+    <div class="item fl">
+      <div class="item_pic">
+        <img src="shy-images/2.jpg" alt="">
+      </div>
+      <div class="info">
+        <p class="top">蔚来ES8六座版亮相北京车展 三位诺奖得主领衔思想盛宴</p>
+        <p class="date">2018年4月15日</p>
+      </div>
+    </div>
+    <div class="item fl">
+      <div class="item_pic">
+        <img src="shy-images/3.jpg" alt="">
+      </div>
+      <div class="info">
+        <p class="top">蔚来斩获2018红点“最佳设计奖”</p>
+        <p class="date">2018年4月27日</p>
+      </div>
+    </div>
+    <div class="item fl">
+      <div class="item_pic">
+        <img src="shy-images/4.jpg" alt="">
+      </div>
+      <div class="info">
+        <p class="top">蔚来将亮相2018北京国际车展</p>
+        <p class="date">2018年4月26日</p>
+      </div>
+    </div>
+    <div class="item fl">
+      <div class="item_pic">
+        <img src="shy-images/5.jpg" alt="">
+      </div>
+      <div class="info">
+        <p class="top">FE南美洲最后一战，蔚来车队入账6分</p>
+        <p class="date">2018年4月26日</p>
+      </div>
+    </div>
+    <div class="item fl">
+      <div class="item_pic">
+        <img src="shy-images/6.jpg" alt="">
+      </div>
+      <div class="info">
+        <p class="top">蔚来车队在亚平宁半岛遭遇“罗马混战”</p>
+        <p class="date">2018年4月26日</p>
+      </div>
+    </div>
+    <div class="item fl">
+      <div class="item_pic">
+        <img src="shy-images/7.jpg" alt="">
+      </div>
+      <div class="info">
+        <p class="top">FE南美洲最后一战，蔚来车队入账6分</p>
+        <p class="date">2018年4月26日</p>
+      </div>
+    </div>
+    <div class="item fl">
+      <div class="item_pic">
+        <img src="shy-images/8.jpg" alt="">
+      </div>
+      <div class="info">
+        <p class="top">特维勇夺第二，蔚来车队登上墨西哥城站领奖台</p>
+        <p class="date">2018年4月26日</p>
+      </div>
+    </div>
+    <div class="item fl">
+      <div class="item_pic">
+        <img src="shy-images/9.jpg" alt="">
+      </div>
+      <div class="info">
+        <p class="top">蔚来获颁中国首张智能网联汽车道路测试号牌</p>
+        <p class="date">2018年4月26日</p>
+      </div>
+    </div>
+  </div>
+  <!--item end-->
+
+  <!--more start-->
+  <div class="btn">
+    <a class="button" href="#">
+      <b class="arr-content">更多新闻</b>
+      <em class="arrow"></em>
+    </a>
+  </div>
+  <!--more end-->
+
+  <!-- footer start -->
+  <footer>
+    <div class="footer-top">
+      <ul class="fl">
+        <li>
+          <strong>&copy; NIO 2018</strong>
+        </li>
+        <li>上海蔚来汽车有限公司</li>
+        <li>
+          <a href="#">隐私政策</a>
+        </li>
+        <li>
+          <a href="#">网络合作申请</a>
+        </li>
+        <li>
+          <a href="#">服务网点</a>
+        </li>
+      </ul>
+      <div class="footer-top-right">
+        <a href="#">
+          <img src="shy-images/icon-wechat.svg" alt="">
+        </a>
+        <a href="#">
+          <img src="shy-images/icon-weibo.svg" alt="">
+        </a>
+        <a href="#" class="location fl">CN
+          <img src="shy-images/icon-flag-cn.svg" alt="">
+        </a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <a href="#">沪ICP备15044878号-3</a>
+      <a href="#">
+        <img src="shy-images/plice.png" alt=""> 沪公网安备 31011402003368号</a>
+    </div>
+  </footer>
+  <!-- footer end -->
+  </div>
+</body>
+
+</html>
